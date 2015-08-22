@@ -43,10 +43,10 @@ class Command(BaseCommand):
         self.__populate_hospitals_and_locations(data)
 
     def __populate_types(self, data):
-        for type_name in zip(data):
+        for type_name in data:
             try:
                 hospital_type = self.__populate_type(type_name)
-                # self.stdout.write('Created {0}'.format(hospital_type))
+                self.stdout.write('Created {0}'.format(hospital_type))
             except IntegrityError:
                 print('Duplicate record skipped')
 
@@ -108,10 +108,10 @@ class Command(BaseCommand):
         types_descriptions = sheet.col_values(3, 7, 10)
 
         for type_name, type_description in zip(types_names, types_descriptions):
-            types.append(type_name + type_description)
+            types.append('{0}{1}'.format(type_name, type_description))
 
         #   handle two-line description
-        types[0] = types[0] + types.pop(1)
+        types[0] = '{0} {1}'.format(types[0], types.pop(1))
         types[1] = '{0} {1}'.format(types[1], types.pop(2))
         types[3] = '{0} {1}'.format(types[3], types.pop(4))
         return types
