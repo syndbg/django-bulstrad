@@ -41,9 +41,11 @@ class Command(BaseCommand):
         address_query = self.__reverse_abbreviations(self.__filter_only_letters(hospital.address))
         translated_address_query = translator.translate(address_query)
 
-        # `name` and `translated address` are matched more often
-        for query in [name_query, translated_address_query, address_query]:
-            geocode_result = self.__geocode(geolocator, query)
+        # `translated address` followed by `address` lead to more accurate matches
+        for query in [translated_address_query, address_query, name_query]:
+            geocode_result = geolocator.geocode(query=query, exactly_one=True,
+                                                timeout=self.API_TIMEOUT,
+                                                sensor=False)
             if geocode_result is not None:
                 return geocode_result
         return None
@@ -51,7 +53,3 @@ class Command(BaseCommand):
     def __filter_only_letters(self, string):
         letters = [letter for letter in string if letter.isspace() or letter.isalnum()]
         return ''.join(letters)
-
-    def __geocode(self, geolocator, query):
-        return geolocator.geocode(query=query, exactly_one=True,
-                                  timeout=self.API_TIMEOUT, sensor=False)
