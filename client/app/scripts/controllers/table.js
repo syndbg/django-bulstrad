@@ -66,9 +66,6 @@ angular.module('djangoBulstradApp')
 
       onRegisterApi: function(gridApi){
         $scope.gridApi = gridApi;
-        $scope.gridApi.core.on.sortChanged($scope, function(grid, sort) {
-          $scope.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
-        });
       },
 
       columnDefs: [

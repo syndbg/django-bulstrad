@@ -48,22 +48,27 @@ angular.module('djangoBulstradApp', [
       controllerAs: 'table',
       resolve: {
         hospitals: ['Hospital', function (Hospital) {
-            return Hospital.query().$promise;
+          return Hospital.query().$promise;
         }],
         hospitalTypes: ['HospitalType', function (HospitalType) {
-            return HospitalType.query().$promise;
+          return HospitalType.query().$promise;
         }],
         hospitalLocations: ['HospitalLocation', function (HospitalLocation) {
-            return HospitalLocation.query().$promise;
+          return HospitalLocation.query().$promise;
         }],
       }
     });
 
-    $stateProvider.state('map', {
-      url: '/map',
+    $stateProvider.state('maps', {
+      url: '/maps?hospitalLat&hospitalLon',
       templateUrl: 'views/map.html',
       controller: 'MapCtrl',
-      controllerAs: 'map'
+      controllerAs: 'map',
+      resolve: {
+        locations: ['$stateParams', function ($stateParams) {
+
+        }]
+      }
     });
   }
 ]);
