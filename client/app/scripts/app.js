@@ -59,7 +59,7 @@ angular.module('djangoBulstradApp', [
       }
     });
 
-    $stateProvider.state('maps', {
+    $stateProvider.state('map', {
       url: '/maps?hospitalLat&hospitalLon',
       templateUrl: 'views/map.html',
       controller: 'MapCtrl',

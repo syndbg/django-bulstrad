@@ -11,26 +11,24 @@ from django.core.management.base import BaseCommand, CommandError
 from hospitals.models import Hospital, HospitalLocation, HospitalType
 
 
-API_KEY = 'm33eu8xjpzfg'
-DOWNLOAD_URL = 'http://www.bulstradlife.bg/uploads/%D0%9E%D0%9A_BLVIG_Spisak_lechebni_zavedenia.pdf'
-CONVERT_URL = 'https://pdftables.com/api?key={0}&format=xlsx'.format(API_KEY)
-PDF_FILENAME = 'bulstrad.pdf'
-XLSX_FILENAME = 'bulstrad.xlsx'
-CHUNK_SIZE = 4096
-
-
 class Command(BaseCommand):
     help = 'Ingests the latest PDF list with supported hospitals'
+    API_KEY = 'm33eu8xjpzfg'
+    DOWNLOAD_URL = 'http://www.bulstradlife.bg/uploads/%D0%9E%D0%9A_BLVIG_Spisak_lechebni_zavedenia.pdf'
+    CONVERT_URL = 'https://pdftables.com/api?key={0}&format=xlsx'.format(API_KEY)
+    PDF_FILENAME = 'bulstrad.pdf'
+    XLSX_FILENAME = 'bulstrad.xlsx'
+    CHUNK_SIZE = 4096
 
     def add_arguments(self, parser):
         parser.add_argument('--download', default=False, type=bool)
 
     def handle(self, **options):
         if options.get('download') is True:
-            self.__download_file(DOWNLOAD_URL, PDF_FILENAME)
+            self.__download_file(self.DOWNLOAD_URL, self.PDF_FILENAME)
             self.__download_converted_xlsx()
 
-        if not exists(XLSX_FILENAME):
+        if not exists(self.XLSX_FILENAME):
             command_msg = 'No local file found. Download one by invoking \
                            the command with `--download=true`'
             raise CommandError(command_msg)
@@ -85,7 +83,7 @@ class Command(BaseCommand):
         r = requests.get(url, stream=True)
 
         with open(filename, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=CHUNK_SIZE):
+            for chunk in r.iter_content(chunk_size=self.CHUNK_SIZE):
                 if chunk:
                     f.write(chunk)
                     f.flush()
@@ -93,11 +91,12 @@ class Command(BaseCommand):
     def __download_converted_xlsx(self):
         # it's weird, but it's faster than
         # POSTing with requests and properly piping data
-        system('curl -F f=@{0} "{1}" > {2}'.format(PDF_FILENAME, CONVERT_URL,
-                                                   XLSX_FILENAME))
+        system('curl -F f=@{0} "{1}" > {2}'.format(self.PDF_FILENAME,
+                                                   self.CONVERT_URL,
+                                                   self.XLSX_FILENAME))
 
     def __extract_types(self):
-        workbook = open_workbook(XLSX_FILENAME)
+        workbook = open_workbook(self.XLSX_FILENAME)
         sheet = workbook.sheet_by_index(0)
         # Hospital Types:
         #   2 : 10 to pass the header and blank entries
@@ -169,7 +168,7 @@ class Command(BaseCommand):
                 out_of_hospital_helps, hospital_helps, laboratory_helps]
 
     def __get_xlsx_data(self):
-        workbook = open_workbook(XLSX_FILENAME)
+        workbook = open_workbook(self.XLSX_FILENAME)
 
         data = self.__extract_first_sheet(workbook.sheet_by_index(0))
 

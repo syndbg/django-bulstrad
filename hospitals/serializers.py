@@ -22,5 +22,6 @@ class HospitalSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Hospital
-        fields = ('id', 'url', 'name', 'address', 'location', 'type',
+        fields = ('id', 'url', 'name', 'address', 'type',
+                  'location', 'latitude', 'longitude',
                   'hospital_help', 'out_of_hospital_help', 'laboratory_help')
