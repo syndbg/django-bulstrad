@@ -8,10 +8,5 @@
  * Controller of the djangoBulstradApp
  */
 angular.module('djangoBulstradApp')
-  .controller('MainCtrl', function () {
-    this.awesomeThings = [
-      'HTML5 Boilerplate',
-      'AngularJS',
-      'Karma'
-    ];
-  });
+  .controller('MainCtrl', ['$scope', 'Constants', function ($scope, Constants) {
+  }]);

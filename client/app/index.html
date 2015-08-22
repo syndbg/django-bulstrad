@@ -1,19 +1,20 @@
-{% load staticfiles %}
 <!doctype html>
 <html>
   <head>
     <meta charset="utf-8">
+    <base href="/">
     <title></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <!-- build:css(.) styles/vendor.css -->
     <!-- bower:css -->
-    <link rel="stylesheet" href="{% static 'bootstrap/dist/css/bootstrap.css' %}" />
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="../bower_components/angular-ui-grid/ui-grid.css" />
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
-    <link rel="stylesheet" href="{% static 'app/styles/main.css' %}">
+    <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
   </head>
   <body ng-app="djangoBulstradApp">
@@ -24,7 +25,7 @@
     <!-- Add your site or application content here -->
     <div class="header">
       <div class="navbar navbar-default" role="navigation">
-        <div class="container">
+        <div class="container-full">
           <div class="navbar-header">
 
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#js-navbar-collapse">
@@ -34,28 +35,35 @@
               <span class="icon-bar"></span>
             </button>
 
-            <a class="navbar-brand" href="#/">djangoBulstrad</a>
+            <a class="navbar-brand" ui-sref="main">djangoBulstrad</a>
           </div>
 
           <div class="collapse navbar-collapse" id="js-navbar-collapse">
 
             <ul class="nav navbar-nav">
-              <li class="active"><a href="#/">Home</a></li>
-              <li><a ng-href="#/about">About</a></li>
-              <li><a ng-href="#/">Contact</a></li>
+              <li ui-sref-active="active">
+                <a ui-sref="table">Table</a>
+              </li>
+
+              <li ui-sref-active="active">
+                <a ui-sref="map">Map</a>
+              </li>
             </ul>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="container">
-    <div ng-view=""></div>
+    <div class="container-full">
+      <div ui-view></div>
     </div>
 
     <div class="footer">
       <div class="container">
-        <p><span class="glyphicon glyphicon-heart"></span> from the Yeoman team</p>
+        <p>
+          <span class="glyphicon glyphicon-heart"></span>
+           built by <a href="https://syndbg.github.io">Anton Antonov (syndbg)</a>
+        </p>
       </div>
     </div>
 
@@ -71,26 +79,35 @@
        ga('send', 'pageview');
     </script>
 
+    <script src='//maps.googleapis.com/maps/api/js?key=AIzaSyCFygjt6Do11VL1vAy06C53UTswPJyXLUs&sensor=false'></script>
     <!-- build:js(.) scripts/vendor.js -->
     <!-- bower:js -->
-    <script src="{% static 'jquery/dist/jquery.js' %}"></script>
-    <script src="{% static 'angular/angular.js' %}"></script>
-    <script src="{% static 'bootstrap/dist/js/bootstrap.js' %}"></script>
-    <script src="{% static 'angular-animate/angular-animate.js' %}"></script>
-    <script src="{% static 'angular-aria/angular-aria.js' %}"></script>
-    <script src="{% static 'angular-cookies/angular-cookies.js' %}"></script>
-    <script src="{% static 'angular-messages/angular-messages.js' %}"></script>
-    <script src="{% static 'angular-resource/angular-resource.js' %}"></script>
-    <script src="{% static 'angular-route/angular-route.js' %}"></script>
-    <script src="{% static 'angular-sanitize/angular-sanitize.js' %}"></script>
-    <script src="{% static 'angular-touch/angular-touch.js' %}"></script>
+    <script src="../bower_components/jquery/dist/jquery.js"></script>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="../bower_components/angular-animate/angular-animate.js"></script>
+    <script src="../bower_components/angular-cookies/angular-cookies.js"></script>
+    <script src="../bower_components/angular-messages/angular-messages.js"></script>
+    <script src="../bower_components/angular-resource/angular-resource.js"></script>
+    <script src="../bower_components/angular-route/angular-route.js"></script>
+    <script src="../bower_components/angular-sanitize/angular-sanitize.js"></script>
+    <script src="../bower_components/angular-touch/angular-touch.js"></script>
+    <script src="../bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="../bower_components/lodash/lodash.js"></script>
+    <script src="../bower_components/angular-google-maps/dist/angular-google-maps.js"></script>
+    <script src="../bower_components/angular-ui-grid/ui-grid.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
         <!-- build:js({.tmp,client/app}) scripts/scripts.js -->
-        <script src="{% static 'app/scripts/app.js' %}"></script>
-        <script src="{% static 'app/scripts/controllers/main.js' %}"></script>
-        <script src="{% static 'app/scripts/controllers/about.js' %}"></script>
+        <script src="scripts/app.js"></script>
+        <script src="scripts/controllers/main.js"></script>
+        <script src="scripts/services/constants.js"></script>
         <!-- endbuild -->
+        <script src="scripts/controllers/table.js"></script>
+        <script src="scripts/controllers/map.js"></script>
+        <script src="scripts/resources/hospital.js"></script>
+        <script src="scripts/resources/hospitalType.js"></script>
+        <script src="scripts/resources/hospitalLocation.js"></script>
 </body>
 </html>

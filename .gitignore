@@ -49,7 +49,7 @@ coverage.xml
 
 # Django stuff:
 *.log
-
+static/
 # Sphinx documentation
 docs/_build/
 
@@ -60,4 +60,3 @@ target/
 /.tmp
 /.sass-cache
 /bower_components
-static/

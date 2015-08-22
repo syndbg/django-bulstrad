@@ -28,6 +28,9 @@ from hospitals import views as hospitals_views
 
 router = routers.DefaultRouter()
 router.register(r'hospitals', hospitals_views.HospitalViewSet)
+router.register(r'hospitals_locations', hospitals_views.HospitalLocationViewSet)
+router.register(r'hospitals_types', hospitals_views.HospitalTypeViewSet)
+
 
 urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name='index.html')),

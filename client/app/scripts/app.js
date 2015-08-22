@@ -8,30 +8,62 @@
  *
  * Main module of the application.
  */
-angular
-  .module('djangoBulstradApp', [
-    'ngAnimate',
-    'ngAria',
-    'ngCookies',
-    'ngMessages',
-    'ngResource',
-    'ngRoute',
-    'ngSanitize',
-    'ngTouch'
-  ])
-  .config(function ($routeProvider) {
-    $routeProvider
-      .when('/', {
-        templateUrl: '/static/app/views/main.html',
-        controller: 'MainCtrl',
-        controllerAs: 'main'
-      })
-      .when('/about', {
-        templateUrl: '/static/app/views/about.html',
-        controller: 'AboutCtrl',
-        controllerAs: 'about'
-      })
-      .otherwise({
-        redirectTo: '/'
-      });
-  });
+angular.module('djangoBulstradApp', [
+  'ngAnimate',
+  'ngCookies',
+  'ngMessages',
+  'ngRoute',
+  'ngResource',
+  'ngSanitize',
+  'ngTouch',
+
+  // 3rd-party
+  'ui.router',
+  'ui.grid',
+  'uiGmapgoogle-maps'
+])
+.run(['$rootScope', '$state', '$stateParams',
+  function ($rootScope, $state, $stateParams) {
+    $rootScope.$state = $state;
+    $rootScope.$stateParams = $stateParams;
+  }
+])
+.config(['$stateProvider', '$urlRouterProvider', '$resourceProvider',
+  function ($stateProvider, $urlRouteProvider, $resourceProvider) {
+    $resourceProvider.defaults.stripTrailingSlashes = false;
+
+    $urlRouteProvider.otherwise('/');
+
+    $stateProvider.state('main', {
+      url: '/',
+      templateUrl: 'views/main.html',
+      controller: 'MainCtrl',
+      controllerAs: 'main'
+    });
+
+    $stateProvider.state('table', {
+      url: '/table',
+      templateUrl: 'views/table.html',
+      controller: 'TableCtrl',
+      controllerAs: 'table',
+      resolve: {
+        hospitals: ['Hospital', function (Hospital) {
+            return Hospital.query().$promise;
+        }],
+        hospitalTypes: ['HospitalType', function (HospitalType) {
+            return HospitalType.query().$promise;
+        }],
+        hospitalLocations: ['HospitalLocation', function (HospitalLocation) {
+            return HospitalLocation.query().$promise;
+        }],
+      }
+    });
+
+    $stateProvider.state('map', {
+      url: '/map',
+      templateUrl: 'views/map.html',
+      controller: 'MapCtrl',
+      controllerAs: 'map'
+    });
+  }
+]);
