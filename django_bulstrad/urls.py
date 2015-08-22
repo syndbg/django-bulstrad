@@ -37,6 +37,7 @@ urlpatterns = [
     # url(r'^(?:index.html)?$', 'django.contrib.staticfiles.views.serve',
     #     kwargs={'path': 'app/index.html'}),
     url(r'^api/', include(router.urls)),
+    # url(r'^api/hospitals/count/$', hospitals_views.HospitalCountView.as_view(), name='hospitals_count'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

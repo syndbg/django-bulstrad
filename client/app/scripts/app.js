@@ -13,13 +13,14 @@ angular.module('djangoBulstradApp', [
   'ngCookies',
   'ngMessages',
   'ngRoute',
-  'ngResource',
   'ngSanitize',
   'ngTouch',
 
   // 3rd-party
+  'restangular',
   'ui.router',
   'ui.grid',
+  'ui.grid.pagination',
   'uiGmapgoogle-maps'
 ])
 .run(['$rootScope', '$state', '$stateParams',
@@ -28,10 +29,8 @@ angular.module('djangoBulstradApp', [
     $rootScope.$stateParams = $stateParams;
   }
 ])
-.config(['$stateProvider', '$urlRouterProvider', '$resourceProvider',
-  function ($stateProvider, $urlRouteProvider, $resourceProvider) {
-    $resourceProvider.defaults.stripTrailingSlashes = false;
-
+.config(['$stateProvider', '$urlRouterProvider', 'RestangularProvider',
+  function ($stateProvider, $urlRouteProvider, RestangularProvider) {
     $urlRouteProvider.otherwise('/');
 
     $stateProvider.state('main', {
@@ -47,28 +46,45 @@ angular.module('djangoBulstradApp', [
       controller: 'TableCtrl',
       controllerAs: 'table',
       resolve: {
-        hospitals: ['Hospital', function (Hospital) {
-          return Hospital.query().$promise;
+        totalHospitals: ['Restangular', '$http', function (Restangular, $http) {
+          // TODO: Replace this with proper Restangular URI build syntax
+          var promise = $http.get(Restangular.configuration.baseUrl + '/hospitals/count/?format=json')
+            .then(function (response) {
+              return response.data.count;
+            });
+          return promise;
         }],
         hospitalTypes: ['HospitalType', function (HospitalType) {
-          return HospitalType.query().$promise;
+          return HospitalType.getList();
         }],
         hospitalLocations: ['HospitalLocation', function (HospitalLocation) {
-          return HospitalLocation.query().$promise;
+          return HospitalLocation.getList();
         }],
       }
     });
 
     $stateProvider.state('map', {
-      url: '/maps?hospitalLat&hospitalLon',
+      url: '/maps?lat&lon',
       templateUrl: 'views/map.html',
       controller: 'MapCtrl',
       controllerAs: 'map',
       resolve: {
-        locations: ['$stateParams', function ($stateParams) {
+        locations: ['$stateParams', 'Hospital', function ($stateParams, Hospital) {
+          if ($stateParams.lat && $stateParams.lon) {
 
+          } else {
+            return Hospital.getList();
+          }
         }]
       }
+    });
+
+    // TODO: Move to an ENV variable the base URL
+    RestangularProvider.setBaseUrl('http://localhost:8000/api/');
+    RestangularProvider.setDefaultRequestParams({format: 'json'});
+    // Note that this is hardcoded to the paginated responses!
+    RestangularProvider.setResponseExtractor(function(response, operation) {
+      return response.results;
     });
   }
 ]);

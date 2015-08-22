@@ -1,4 +1,5 @@
-from rest_framework import filters, viewsets
+from rest_framework.response import Response
+from rest_framework import decorators, filters, viewsets
 
 from .models import Hospital, HospitalLocation, HospitalType
 from .serializers import HospitalSerializer, HospitalLocationSerializer, HospitalTypeSerializer
@@ -9,6 +10,11 @@ class HospitalViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = HospitalSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('id', 'name', 'latitude', 'longitude')
+
+    @decorators.list_route(methods=['get'])
+    def count(self, request, pk=None):
+        hospitals_count = Hospital.objects.all().count()
+        return Response({'count': hospitals_count})
 
 
 class HospitalLocationViewSet(viewsets.ReadOnlyModelViewSet):
