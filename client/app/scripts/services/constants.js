@@ -13,6 +13,8 @@ var JSON_SUFFIX = '?format=json';
 
 angular.module('djangoBulstradApp')
   .constant('Constants', {
+    NO_MARK: '✗',
+    YES_MARK: '√',
     API_URL: API_URL,
     JSON_SUFFIX: JSON_SUFFIX,
 
