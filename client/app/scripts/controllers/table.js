@@ -8,10 +8,10 @@
  * Controller of the djangoBulstradApp
  */
 angular.module('djangoBulstradApp')
-  .controller('TableCtrl', ['$scope', '$http', 'Constants', 'uiGridConstants', 'totalHospitals', 'Hospital', 'Restangular', 'hospitalLocations', 'hospitalTypes',
-  function ($scope, $http, Constants, uiGridConstants, totalHospitals, Hospital, Restangular, hospitalLocations, hospitalTypes) {
+  .controller('TableCtrl', ['$scope', '$timeout', 'Constants', 'uiGridConstants', 'totalHospitals', 'Hospital', 'Restangular', 'hospitalLocations', 'hospitalTypes',
+  function ($scope, $timeout, Constants, uiGridConstants, totalHospitals, Hospital, Restangular, hospitalLocations, hospitalTypes) {
     var START_PAGE = 1;
-    var LIMIT = 100;
+    var PAGE_SIZE = 500;
 
     var hospitalLocationsOptions = createOptions(hospitalLocations);
     var hospitalTypesOptions = createOptions(hospitalTypes);
@@ -19,21 +19,32 @@ angular.module('djangoBulstradApp')
 
     var paginationOptions = {
       pageNumber: START_PAGE,
-      pageSize: LIMIT
+      pageSize: PAGE_SIZE
     };
 
     $scope.gridOptions = {
-      enableFiltering: false,
+      enableFiltering: true,
+      useExternalFiltering: true,
       enableSorting: true,
       enableColumnResizing: true,
 
       paginationPageSizes: [25, 50, 75, 100, 150, 300, 500],
-      paginationPageSize: LIMIT,
+      paginationPageSize: PAGE_SIZE,
 
       useExternalPagination: true,
 
       onRegisterApi: function(gridApi){
         $scope.gridApi = gridApi;
+
+        $scope.gridApi.core.on.filterChanged($scope, function() {
+          var grid = this.grid;
+          var filterCriteria = getFilterCriteria(grid.columns);
+
+          Hospital.getList(filterCriteria).then(function (data) {
+            $scope.gridOptions.data = data;
+          });
+        });
+
         $scope.gridApi.pagination.on.paginationChanged($scope, function (newPage, pageSize) {
           paginationOptions.pageNumber = newPage;
           paginationOptions.pageSize = pageSize;
@@ -68,7 +79,13 @@ angular.module('djangoBulstradApp')
       ]
     };
 
-    setGridData(START_PAGE, LIMIT);
+    setGridData(START_PAGE, PAGE_SIZE);
+
+    $scope.$on('$destroy', function (event) {
+      if (!_.isUndefined($scope.filterTimeout)) {
+        $timeout.cancel($scope.filterTimeout);
+      }
+    });
 
     $scope.toggleFiltering = function(){
       $scope.gridOptions.enableFiltering = !$scope.gridOptions.enableFiltering;
@@ -81,6 +98,18 @@ angular.module('djangoBulstradApp')
         $scope.gridOptions.data = data;
         _.map($scope.gridOptions.data, formatItem);
       });
+    }
+
+    function getFilterCriteria(columns) {
+      var column = _.find(columns, function (column) {
+        // only one filter per column, so it's ok to check length
+        return column.filters.length > 0 &&
+               !_.isUndefined(column.filters[0]['term']);
+      });
+
+      var criteria = {};
+      criteria[column.colDef.field] = column.filters[0].term
+      return criteria
     }
 
     // TODO: Move this to a filter when I stop
