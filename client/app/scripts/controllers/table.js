@@ -15,7 +15,7 @@ angular.module('djangoBulstradApp')
 
     var hospitalLocationsOptions = createOptions(hospitalLocations);
     var hospitalTypesOptions = createOptions(hospitalTypes);
-    var helpOptions = [{value: Constants.NO_MARK, label: 'No'}, {value: Constants.YES_MARK, label: 'Yes'}];
+    var helpOptions = [{value: 'False', label: 'No'}, {value: 'True', label: 'Yes'}];
 
     var paginationOptions = {
       pageNumber: START_PAGE,
@@ -49,7 +49,7 @@ angular.module('djangoBulstradApp')
               $scope.gridOptions.data = data;
               _.map($scope.gridOptions.data, formatItem);
             });
-          }, 500);
+          }, 250);
         });
 
         $scope.gridApi.pagination.on.paginationChanged($scope, function (newPage, pageSize) {
@@ -88,7 +88,7 @@ angular.module('djangoBulstradApp')
 
     setGridData(START_PAGE, PAGE_SIZE);
 
-    $scope.$on('$destroy', function (event) {
+    $scope.$on('$destroy', function () {
       if (!_.isUndefined($scope.filterTimeout)) {
         $timeout.cancel($scope.filterTimeout);
       }
@@ -108,15 +108,17 @@ angular.module('djangoBulstradApp')
     }
 
     function getFilterCriteria(columns) {
-      var column = _.find(columns, function (column) {
+      columns = _.filter(columns, function (column) {
         // only one filter per column, so it's ok to check length
         return column.filters.length > 0 &&
                !_.isUndefined(column.filters[0]['term']);
       });
 
       var criteria = {};
-      criteria[column.colDef.field] = column.filters[0].term
-      return criteria
+      _.each(columns, function (column) {
+        criteria[column.colDef.field] = column.filters[0].term;
+      });
+      return criteria;
     }
 
     // TODO: Move this to a filter when I stop
