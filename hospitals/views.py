@@ -9,8 +9,11 @@ from .serializers import HospitalSerializer, HospitalLocationSerializer, Hospita
 class HospitalViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Hospital.objects.all().order_by('name')
     serializer_class = HospitalSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (filters.DjangoFilterBackend, filters.OrderingFilter)
     filter_class = HospitalFilter
+    ordering_fields = ('id', 'name', 'address', 'location', 'type', 'location',
+                       'out_of_hospital_help', 'hospital_help',
+                       'laboratory_help')
 
     @decorators.list_route(methods=['get'])
     def count(self, request, pk=None):

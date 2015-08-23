@@ -70,11 +70,7 @@ angular.module('djangoBulstradApp', [
       controllerAs: 'map',
       resolve: {
         locations: ['$stateParams', 'Hospital', function ($stateParams, Hospital) {
-          if ($stateParams.lat && $stateParams.lon) {
-
-          } else {
-            return Hospital.getList();
-          }
+          return Hospital.getList({location: 498});
         }]
       }
     });

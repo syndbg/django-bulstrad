@@ -101,3 +101,8 @@ body {
   margin: 0 5%;
   width: 90%;
 }
+
+.btn-maps {
+  width: 100%;
+  border: 1px;
+}

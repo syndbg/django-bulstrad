@@ -24,14 +24,16 @@ angular.module('djangoBulstradApp')
 
     $scope.gridOptions = {
       enableFiltering: true,
-      useExternalFiltering: true,
       enableSorting: true,
       enableColumnResizing: true,
 
       paginationPageSizes: [25, 50, 75, 100, 150, 300, 500],
       paginationPageSize: PAGE_SIZE,
 
+      useExternalFiltering: true,
       useExternalPagination: true,
+      // TODO: Evaluate if it's worth to have server-side sorting
+      // useExternalSorting: true,
 
       onRegisterApi: function(gridApi){
         $scope.gridApi = gridApi;
@@ -43,23 +45,29 @@ angular.module('djangoBulstradApp')
 
           var grid = this.grid;
           $scope.filterTimeout = $timeout(function () {
-            var filterCriteria = getFilterCriteria(grid.columns);
-
-            Hospital.getList(filterCriteria).then(function (data) {
-              $scope.gridOptions.data = data;
-              _.map($scope.gridOptions.data, formatItem);
-            });
+            setFilteredData(grid);
           }, 250);
+        });
+
+        $scope.gridApi.core.on.sortChanged($scope, function () {
+
         });
 
         $scope.gridApi.pagination.on.paginationChanged($scope, function (newPage, pageSize) {
           paginationOptions.pageNumber = newPage;
           paginationOptions.pageSize = pageSize;
           setGridData(newPage, pageSize);
+
+          var grid = this.grid;
+          setFilteredData(grid);
         });
       },
 
       columnDefs: [
+        // TODO: Figure out how to acccess
+        {field: '_maps', name: '', cellTemplate: 'views/google-maps-button.html',
+          filter: {}
+        },
         {field: 'location', name: 'Location',
           filter: {type: uiGridConstants.filter.SELECT, selectOptions: hospitalLocationsOptions},
           cellTooltip: createCellTooltip('location'), headerTooltip: headerTooltip
@@ -99,6 +107,15 @@ angular.module('djangoBulstradApp')
       $scope.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
     };
 
+    function setFilteredData(grid) {
+      var filterCriteria = getFilterCriteria(grid.columns);
+
+      Hospital.getList(filterCriteria).then(function (data) {
+        $scope.gridOptions.data = data;
+        _.map($scope.gridOptions.data, formatItem);
+      });
+    }
+
     function setGridData(page, page_size) {
       Hospital.getList({page: page, page_size: page_size}).then(function (data) {
         $scope.gridOptions.totalItems = totalHospitals;
@@ -125,7 +142,7 @@ angular.module('djangoBulstradApp')
     // getting <filtername>FilterProvider errors.
     function createOptions(values) {
       return _.map(values, function (value) {
-        return { value: value.name, label: value.name };
+        return { value: value.id, label: value.name };
       });
     }
 
@@ -162,5 +179,9 @@ angular.module('djangoBulstradApp')
       item.hospital_help = item.hospital_help ? Constants.YES_MARK : Constants.NO_MARK;
       item.out_of_hospital_help = item.out_of_hospital_help ? Constants.YES_MARK : Constants.NO_MARK;
       item.laboratory_help = item.laboratory_help ? Constants.YES_MARK : Constants.NO_MARK;
+    }
+
+    function clickViewInMaps(row) {
+      console.log(row);
     }
 }]);
