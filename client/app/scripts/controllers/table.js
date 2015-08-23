@@ -37,12 +37,19 @@ angular.module('djangoBulstradApp')
         $scope.gridApi = gridApi;
 
         $scope.gridApi.core.on.filterChanged($scope, function() {
-          var grid = this.grid;
-          var filterCriteria = getFilterCriteria(grid.columns);
+          if (angular.isDefined($scope.filterTimeout)) {
+            $timeout.cancel($scope.filterTimeout);
+          }
 
-          Hospital.getList(filterCriteria).then(function (data) {
-            $scope.gridOptions.data = data;
-          });
+          var grid = this.grid;
+          $scope.filterTimeout = $timeout(function () {
+            var filterCriteria = getFilterCriteria(grid.columns);
+
+            Hospital.getList(filterCriteria).then(function (data) {
+              $scope.gridOptions.data = data;
+              _.map($scope.gridOptions.data, formatItem);
+            });
+          }, 500);
         });
 
         $scope.gridApi.pagination.on.paginationChanged($scope, function (newPage, pageSize) {
