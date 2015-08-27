@@ -1,3 +1,4 @@
+
 'use strict';
 
 /**
@@ -56,10 +57,9 @@ angular.module('djangoBulstradApp')
         $scope.gridApi.pagination.on.paginationChanged($scope, function (newPage, pageSize) {
           paginationOptions.pageNumber = newPage;
           paginationOptions.pageSize = pageSize;
-          setGridData(newPage, pageSize);
 
           var grid = this.grid;
-          setFilteredData(grid);
+          setFilteredData(grid, newPage, pageSize);
         });
       },
 
@@ -94,6 +94,7 @@ angular.module('djangoBulstradApp')
       ]
     };
 
+    setFilteredData
     setGridData(START_PAGE, PAGE_SIZE);
 
     $scope.$on('$destroy', function () {

@@ -1,4 +1,22 @@
+<div class="map-controls">
+  <button class="btn btn-default" ng-click="clear()">Clear filters</button>
+
+  <ui-select ng-model="type.selected"
+             theme="bootstrap"
+             style="width: 700px;"
+             on-remove="updateMarkers()"
+             on-select="updateMarkers()">
+    <ui-select-match placeholder="Enter or select a type..." allow-clear="true">{{$select.selected.name}}</ui-select-match>
+    <ui-select-choices repeat="type in types track by $index"
+                       refresh="refreshTypes($select.search)"
+                       refresh-delay="0">
+      <div ng-bind-html="type.name | highlight: $select.search"></div>
+    </ui-select-choices>
+  </ui-select>
+</div>
+
+
 <ui-gmap-google-map center='center' zoom='zoom'>
-  <ui-gmap-markers models="markers" coords="'self'" fit='true'>
+  <ui-gmap-markers models="hospitals" coords="'self'" fit='true'>
   </ui-gmap-markers>
 </ui-gmap-google-map>

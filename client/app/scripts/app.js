@@ -19,7 +19,9 @@ angular.module('djangoBulstradApp', [
   // 3rd-party
   'restangular',
   'ui.router',
+  'ui.bootstrap',
   'ui.grid',
+  'ui.select',
   'ui.grid.pagination',
   'uiGmapgoogle-maps'
 ])
@@ -29,8 +31,8 @@ angular.module('djangoBulstradApp', [
     $rootScope.$stateParams = $stateParams;
   }
 ])
-.config(['$stateProvider', '$urlRouterProvider', 'RestangularProvider',
-  function ($stateProvider, $urlRouteProvider, RestangularProvider) {
+.config(['$stateProvider', '$urlRouterProvider', 'RestangularProvider', 'uiSelectConfig',
+  function ($stateProvider, $urlRouteProvider, RestangularProvider, uiSelectConfig) {
     $urlRouteProvider.otherwise('/');
 
     $stateProvider.state('main', {
@@ -67,12 +69,7 @@ angular.module('djangoBulstradApp', [
       url: '/maps?lat&lon',
       templateUrl: 'views/map.html',
       controller: 'MapCtrl',
-      controllerAs: 'map',
-      resolve: {
-        locations: ['$stateParams', 'Hospital', function ($stateParams, Hospital) {
-          return Hospital.getList({location: 498});
-        }]
-      }
+      controllerAs: 'map'
     });
 
     // TODO: Move to an ENV variable the base URL
@@ -82,5 +79,10 @@ angular.module('djangoBulstradApp', [
     RestangularProvider.setResponseExtractor(function(response, operation) {
       return response.results;
     });
+
+    // https://github.com/angular-ui/ui-select/wiki/ui-select#attributes
+    uiSelectConfig.theme = 'bootstrap';
+    uiSelectConfig.resetSearchInput = true;
+    uiSelectConfig.appendToBody = true;
   }
 ]);

@@ -1,3 +1,5 @@
+from os import environ
+
 from translate import Translator
 from geopy.geocoders import GoogleV3
 
@@ -10,7 +12,7 @@ class Command(BaseCommand):
     help = 'Populate `latitude`/`longitude` for `Hospital` records.\
     Note that API limits for Google Maps and MyMemory apply!'
 
-    API_KEY = 'AIzaSyCFygjt6Do11VL1vAy06C53UTswPJyXLUs'
+    API_KEY = environ['MAPS_KEY']
     API_TIMEOUT = 10
 
     def handle(self, **options):
@@ -22,7 +24,7 @@ class Command(BaseCommand):
                 hospital.longitude = geocode.longitude
                 hospital.save(False)
                 self.stdout.write('Added latitude and longitude for <{0}>'
-                    .format(hospital))
+                .format(hospital))
 
     def __reverse_abbreviations(self, string):
         meanings = {
@@ -47,8 +49,8 @@ class Command(BaseCommand):
                                                 timeout=self.API_TIMEOUT,
                                                 sensor=False)
             if geocode_result is not None:
-                return geocode_result
-        return None
+                break
+        return geocode_result
 
     def __filter_only_letters(self, string):
         letters = [letter for letter in string if letter.isspace() or letter.isalnum()]

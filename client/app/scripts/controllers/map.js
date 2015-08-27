@@ -8,37 +8,45 @@
  * Controller of the djangoBulstradApp
  */
 angular.module('djangoBulstradApp')
-  .controller('MapCtrl', ['$scope', '$timeout', 'Constants', 'locations',
-  function ($scope, $timeout, Constants, locations) {
+.controller('MapCtrl', ['$scope', '$http', '$timeout', 'Constants', 'HospitalType', 'Hospital', 'HospitalLocation',
+  function ($scope, $http, $timeout, Constants, HospitalType, Hospital, HospitalLocation) {
     $scope.center = Constants.MAP_CENTER;
+    $scope.locations = []
+    $scope.hospitals = [];
+    $scope.type = {};
     $scope.zoom = Constants.MAP_ZOOM;
 
-    $scope.markers = locations;
-    // $scope.markers = [
-    //   {
-    //       latitude: 42.7000,
-    //       longitude: 23.3333,
-    //       icon: undefined,
-    //       id: "7"
-    //     },
-    //     {
-    //       latitude: 42.8000,
-    //       longitude: 23.3333,
-    //       icon: undefined,
-    //       id: "10"
-    //     }
-    // ];
-    // $scope.markers = [];
-    // createMarkers(locations);
-    // function createMarkers(locations) {
-    //   _.each(locations, function (location) {
-    //     var marker = {
-    //       id: location.id,
-    //       name: location.name,
-    //       latitude: parseInt(location.latitude, 10),
-    //       longitude: parseInt(location.longitude, 10)
-    //     };
-    //     $scope.markers.push(marker);
-    //   });
-    // }
-  }]);
+    $scope.refreshTypes = createRefreshFunction(HospitalType, 'type_id', 'types');
+    $scope.refreshLocations = createRefreshFunction(HospitalLocation, 'location_id', 'locations');
+
+    $scope.clear = function() {
+      $scope.type.selected = undefined;
+    };
+
+    $scope.updateMarkers = function () {
+      var criteria = {
+        type: $scope.type.id
+      };
+
+      console.log(criteria);
+      setHospitals();
+    };
+
+    function createRefreshFunction(restangularModel, criteria_name, scope_property) {
+      return function (criteria_value) {
+        var criteria = {};
+        criteria[criteria_name] = criteria_value;
+        return restangularModel.getList(criteria).then(function (data) {
+          $scope[scope_property] = data;
+        });
+      };
+    }
+
+    function setHospitals(criteria) {
+      return Hospital.getList(criteria).then(function (data) {
+        console.log(data);
+        $scope.hospitals = data;
+      });
+    }
+  }
+]);
