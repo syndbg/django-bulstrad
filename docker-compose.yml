@@ -1,0 +1,22 @@
+db:
+  image: postgres:9.4
+  environment:
+    POSTGRES_USER: django
+    POSTGRES_PASSWORD: django
+  ports:
+    - "5432:5432"
+
+app:
+  build: .
+  # replace with gunicorn when deploying
+  command: python manage.py runserver 0.0.0.0:8000
+  volumes:
+    - .:/code
+  ports:
+    - "8000:8000"
+  links:
+    - db
+  # Change when deploying
+  # environment:
+  #  GOOGLE_MAPS_API_KEY: YOUR_KEY
+  #  PDF_TABLES_API_KEY: YOUR_KEY

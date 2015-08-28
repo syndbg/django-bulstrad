@@ -1,10 +1,11 @@
 from functools import reduce
-from os import system, environ
+from os import system
 from os.path import exists
 
 import requests
 from xlrd import open_workbook
 
+from django.conf import settings
 from django.db.models import Q
 from django.db.utils import IntegrityError
 from django.core.management.base import BaseCommand, CommandError
@@ -13,7 +14,7 @@ from hospitals.models import Hospital, HospitalLocation, HospitalType
 
 class Command(BaseCommand):
     help = 'Ingests the latest PDF list with supported hospitals'
-    API_KEY = environ['PDF_KEY']
+    API_KEY = settings.PDF_TABLES_API_KEY
     DOWNLOAD_URL = 'http://www.bulstradlife.bg/uploads/%D0%9E%D0%9A_BLVIG_Spisak_lechebni_zavedenia.pdf'
     CONVERT_URL = 'https://pdftables.com/api?key={0}&format=xlsx'.format(API_KEY)
     PDF_FILENAME = 'bulstrad.pdf'

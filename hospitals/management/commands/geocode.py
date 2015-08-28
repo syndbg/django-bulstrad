@@ -3,6 +3,7 @@ from os import environ
 from translate import Translator
 from geopy.geocoders import GoogleV3
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
 
 from hospitals.models import Hospital
@@ -12,7 +13,7 @@ class Command(BaseCommand):
     help = 'Populate `latitude`/`longitude` for `Hospital` records.\
     Note that API limits for Google Maps and MyMemory apply!'
 
-    API_KEY = environ['MAPS_KEY']
+    API_KEY = settings.GOOGLE_MAPS_API_KEY
     API_TIMEOUT = 10
 
     def handle(self, **options):
@@ -24,7 +25,7 @@ class Command(BaseCommand):
                 hospital.longitude = geocode.longitude
                 hospital.save(False)
                 self.stdout.write('Added latitude and longitude for <{0}>'
-                .format(hospital))
+                           .format(hospital))
 
     def __reverse_abbreviations(self, string):
         meanings = {

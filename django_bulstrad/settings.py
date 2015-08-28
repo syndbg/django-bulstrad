@@ -26,9 +26,13 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# https://console.developers.google.com/
+GOOGLE_MAPS_API_KEY = os.environ['GOOGLE_MAPS_API_KEY']
+# https://pdftables.com/api
+PDF_TABLES_API_KEY = os.environ['PDF_TABLES_API_KEY']
+
 
 # Application definition
-
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -84,9 +88,12 @@ WSGI_APPLICATION = 'django_bulstrad.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        # TODO: Change after development
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'bulstrad',
+        'USER': os.environ['POSTGRES_USER'],
+        'PASSWORD': os.environ['POSTGRES_PASSWORD'],
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
 
